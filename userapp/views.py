@@ -24,8 +24,9 @@ def register_user(request):
         serializer = CustomUserSerializers(data = request.data)
         if serializer.is_valid():
             serializer.save()
+            return Response({"message":"Registraion Successfull !"},status=status.HTTP_200_OK)
 
-        return Response({"message":"Registration successfull !"},status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        return Response(serializer.errors,status=status.HTTP_500_INTERNAL_SERVER_ERROR)
         
     except Exception as e:
         return Response({
@@ -41,6 +42,8 @@ def requestOtp(request):
     try:
         email = request.data.get('email')
         user = CustomUser.objects.filter(email=email).first()
+        print("===========")
+        print(user)
         if user:
             user.generate_otp()
 
@@ -111,3 +114,11 @@ def Logout_user(request):
             "error": str(e),
             "message": "Error occurred in logout view"
         },status=status.HTTP_500_INTERNAL_SERVER_ERROR)    
+    
+
+@api_view(['GET'])
+@authentication_classes([JWTAuthentication])
+@permission_classes([IsAuthenticated])
+def protected_view(request):
+    data = request.user
+    return Response(request.user.email)    

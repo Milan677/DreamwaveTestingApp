@@ -7,13 +7,12 @@ import random
 
 # Create your models here.
 class CustomUserManager(BaseUserManager):
-    def create_user(self,email,mobile_no,username=None,password=None,**extra_fields):
+    def create_user(self, email, mobile_no, username=None, password=None, **extra_fields):
         if not email:
             raise ValueError("Email is required")
         if not mobile_no:
             raise ValueError("Mobile number is required")
-        
-        
+
         email = self.normalize_email(email)
         user = self.model(
             email=email,
@@ -21,10 +20,13 @@ class CustomUserManager(BaseUserManager):
             username=username if username else '',
             **extra_fields
         )
-        user.set_password(password)
-        user.save(using = self._db)
-
+        if password:
+            user.set_password(password)
+        else:
+            user.set_unusable_password()
+        user.save(using=self._db)
         return user
+
  
 
 class CustomUser(AbstractBaseUser,PermissionsMixin):
