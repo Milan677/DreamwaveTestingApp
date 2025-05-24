@@ -101,7 +101,7 @@ def verifyOtp(request):
 
 @api_view(['POST'])
 @authentication_classes([JWTAuthentication])
-@permission_classes(IsAuthenticated)
+@permission_classes([IsAuthenticated])
 def Logout_user(request):
     try:
         refresh_token = request.data.get('refresh_token')
